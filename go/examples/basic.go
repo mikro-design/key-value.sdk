@@ -23,7 +23,7 @@ func main() {
 		}
 		token = resp.Token
 		fmt.Printf("Generated token: %s\n", token)
-		fmt.Println("Save this! Set KV_TOKEN environment variable to reuse.\n")
+		fmt.Println("Save this! Set KV_TOKEN environment variable to reuse.")
 	} else {
 		fmt.Println("=== Using Existing Token ===")
 		fmt.Printf("Token: %s\n\n", token)
