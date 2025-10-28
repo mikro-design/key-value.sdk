@@ -1,0 +1,29 @@
+[package]
+name = "keyvalue-client"
+version = "0.1.0"
+edition = "2021"
+authors = [""]
+description = "Rust client for Key-Value store with memorable 5-word tokens"
+license = "MIT"
+repository = "https://github.com/mikro-design/key-value.sdk"
+keywords = ["key-value", "kv", "storage", "api-client"]
+categories = ["api-bindings", "web-programming::http-client"]
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[example]]
+name = "basic"
+path = "examples/basic.rs"
+
+[[example]]
+name = "batch"
+path = "examples/batch.rs"

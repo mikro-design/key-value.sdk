@@ -1,0 +1,33 @@
+{
+  "name": "key-value-sdk",
+  "version": "1.0.0",
+  "description": "Monorepo for Key-Value SDKs (Python, JavaScript, C, curl)",
+  "private": true,
+  "workspaces": [
+    "javascript"
+  ],
+  "scripts": {
+    "test": "npm run test:js && npm run test:py",
+    "test:js": "cd javascript && npm test",
+    "test:py": "cd python && pytest",
+    "build:js": "cd javascript && npm run build",
+    "format:js": "cd javascript && npm run format",
+    "format:py": "cd python && black keyvalue/ examples/ && flake8 keyvalue/",
+    "typecheck:js": "cd javascript && npm run typecheck"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikro-design/key-value.sdk"
+  },
+  "keywords": [
+    "key-value",
+    "sdk",
+    "client",
+    "python",
+    "javascript",
+    "typescript",
+    "c"
+  ],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,23 @@
+export { KeyValueClient } from './client'
+export type {
+  ClientOptions,
+  StoreOptions,
+  StoreResponse,
+  RetrieveResponse,
+  GenerateResponse,
+  DeleteResponse,
+  HistoryOptions,
+  HistoryResponse,
+  HistoryEvent,
+  PatchOperations,
+  PatchOptions,
+  PatchResponse,
+  BatchOperation,
+  BatchResult,
+  BatchResponse,
+  DataSchema,
+  APIError,
+  Tier,
+  UserTokenInfo,
+  TokenUsage,
+} from './types'
