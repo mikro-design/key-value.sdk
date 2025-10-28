@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "Monorepo for Key-Value SDKs (Python, JavaScript, C, curl)",
   "private": true,
-  "workspaces": [
-    "javascript"
-  ],
   "scripts": {
     "test": "npm run test:js && npm run test:py",
     "test:js": "cd javascript && npm test",
