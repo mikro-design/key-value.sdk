@@ -49,7 +49,7 @@ setup(
         "webhook": [
             "flask>=2.0.0",
         ],
-    ],
+    },
     entry_points={
         "console_scripts": [
             # Could add CLI tools here
