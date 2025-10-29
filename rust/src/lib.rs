@@ -48,6 +48,9 @@ pub enum Error {
 
     #[error("Validation error: {0}")]
     Validation(String),
+
+    #[error("JSON serialization error: {0}")]
+    Serialization(#[from] serde_json::Error),
 }
 
 /// Key-Value API client
