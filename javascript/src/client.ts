@@ -212,7 +212,7 @@ export class KeyValueClient {
 
       clearTimeout(timeoutId)
 
-      const data = await response.json()
+      const data = (await response.json()) as any
 
       if (!response.ok) {
         throw this.createError(data.error || `HTTP ${response.status}`, response.status, data)
