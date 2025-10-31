@@ -380,9 +380,24 @@ describe('KeyValueClient', () => {
     })
 
     it('should handle timeout', async () => {
-      const mockFetch = vi.fn().mockImplementation(() =>
-        new Promise(resolve => setTimeout(resolve, 100))
-      )
+      const mockFetch = vi.fn().mockImplementation((url, options) => {
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(() => resolve({
+            ok: true,
+            status: 200,
+            json: async () => ({ success: true, data: {} })
+          }), 100)
+
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              clearTimeout(timeoutId)
+              const abortError = new Error('The operation was aborted')
+              abortError.name = 'AbortError'
+              reject(abortError)
+            })
+          }
+        })
+      })
 
       const client = new KeyValueClient({
         token: 'test-token',

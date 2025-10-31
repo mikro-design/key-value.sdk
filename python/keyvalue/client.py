@@ -131,9 +131,7 @@ class KeyValueClient:
         if not auth_token:
             raise KeyValueError("Token is required for retrieve operation")
 
-        return self._request(
-            "GET", "/api/retrieve", headers={"X-KV-Token": auth_token}
-        )
+        return self._request("GET", "/api/retrieve", headers={"X-KV-Token": auth_token})
 
     def delete(self, token: Optional[str] = None) -> Dict[str, Any]:
         """
