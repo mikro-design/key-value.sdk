@@ -1,6 +1,13 @@
 # Key-Value SDKs
 
-> Official client libraries for [Key-Value](https://key-value.co) - a secure key-value store with memorable 5-word tokens.
+> Official client libraries for [Key-Value](https://key-value.co) - a secure key-value store with **memorable 5-word tokens**.
+
+**Why Key-Value?**
+- 🧠 **Memorable Tokens**: Share data with `capable-germinate-disbelief-survival-quantum` instead of `a8f7b2c9-4e3d-11ec-81d3-0242ac130003`
+- 🛠️ **6 Production SDKs**: Python, JavaScript, Go, Rust, C, curl - all with feature parity
+- 🌐 **IoT Ready**: Optimized C SDK for Raspberry Pi, ESP32, Arduino, and embedded systems
+- 📊 **Time-Series History**: Built-in event log with classification and analytics
+- ⚡ **Advanced Features**: Atomic PATCH operations, batch requests, schema validation, versioning
 
 [![Python](https://img.shields.io/pypi/v/keyvalue-client?label=Python)](./python)
 [![JavaScript](https://img.shields.io/npm/v/@keyvalue/client?label=JavaScript)](./javascript)
@@ -242,9 +249,30 @@ When adding features, please implement across all SDKs:
 - [ ] Feature added to C (if applicable)
 - [ ] Examples updated
 
+## 💰 Pricing
+
+**Free tier**: 100 requests/minute, 100KB payloads, 30-day TTL - perfect for development and small projects.
+
+**Paid plans** available for production apps with higher limits, longer TTLs, and priority support.
+
+See [PRICING.md](./PRICING.md) for detailed pricing and features.
+
+## 🔒 Security
+
+Security is our top priority. We use TLS 1.3, AES-256 encryption, and follow industry best practices.
+
+- Encryption in transit and at rest
+- Client-side encryption examples included
+- SOC2 Type II certification in progress
+- Regular security audits
+
+See [SECURITY.md](./SECURITY.md) for our security policy and best practices.
+
 ## 📄 License
 
-MIT © [Your Name]
+MIT © Key-Value Team
+
+This software is open source and can be self-hosted. Paid plans support our managed cloud service with SLAs and support.
 
 ## 🔗 Links
 
