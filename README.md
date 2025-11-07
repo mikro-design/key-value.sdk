@@ -9,6 +9,7 @@
 - 📊 **Time-Series History**: Built-in event log with classification and analytics
 - ⚡ **Advanced Features**: Atomic PATCH operations, batch requests, schema validation, versioning
 
+[![CI](https://github.com/mikro-design/key-value.sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mikro-design/key-value.sdk/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/pypi/v/keyvalue-client?label=Python)](./python)
 [![JavaScript](https://img.shields.io/npm/v/@keyvalue/client?label=JavaScript)](./javascript)
 [![C](https://img.shields.io/badge/C-Ready-blue)](./c)
