@@ -1,0 +1,337 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'python-v*'
+      - 'javascript-v*'
+      - 'go-v*'
+      - 'rust-v*'
+      - 'c-v*'
+
+jobs:
+  release-python:
+    name: Release Python to PyPI
+    if: startsWith(github.ref, 'refs/tags/python-v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install build dependencies
+      run: |
+        pip install build twine
+
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/python-v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Releasing Python version: $VERSION"
+
+    - name: Verify version matches setup.py
+      working-directory: ./python
+      run: |
+        SETUP_VERSION=$(python setup.py --version)
+        TAG_VERSION=${{ steps.version.outputs.version }}
+        if [ "$SETUP_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch: setup.py=$SETUP_VERSION, tag=$TAG_VERSION"
+          exit 1
+        fi
+        echo "✓ Version matches: $SETUP_VERSION"
+
+    - name: Build distribution
+      working-directory: ./python
+      run: |
+        python -m build
+        ls -lh dist/
+
+    - name: Publish to Test PyPI
+      if: github.event_name == 'push' && contains(github.ref, '-rc')
+      working-directory: ./python
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.TEST_PYPI_TOKEN }}
+      run: |
+        twine upload --repository testpypi dist/*
+
+    - name: Publish to PyPI
+      if: github.event_name == 'push' && !contains(github.ref, '-rc')
+      working-directory: ./python
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        twine upload dist/*
+
+    - name: Create GitHub Release
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const version = '${{ steps.version.outputs.version }}';
+
+          await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: `python-v${version}`,
+            name: `Python SDK v${version}`,
+            body: `Release of Python SDK version ${version}\n\nInstall: \`pip install keyvalue-client==${version}\`\n\nSee [CHANGELOG.md](./python/CHANGELOG.md) for details.`,
+            draft: false,
+            prerelease: version.includes('rc') || version.includes('beta') || version.includes('alpha')
+          });
+
+  release-javascript:
+    name: Release JavaScript to npm
+    if: startsWith(github.ref, 'refs/tags/javascript-v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        registry-url: 'https://registry.npmjs.org'
+
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/javascript-v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Releasing JavaScript version: $VERSION"
+
+    - name: Install dependencies
+      working-directory: ./javascript
+      run: npm ci
+
+    - name: Verify version matches package.json
+      working-directory: ./javascript
+      run: |
+        PACKAGE_VERSION=$(node -p "require('./package.json').version")
+        TAG_VERSION=${{ steps.version.outputs.version }}
+        if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch: package.json=$PACKAGE_VERSION, tag=$TAG_VERSION"
+          exit 1
+        fi
+        echo "✓ Version matches: $PACKAGE_VERSION"
+
+    - name: Run tests
+      working-directory: ./javascript
+      run: npm test
+
+    - name: Build
+      working-directory: ./javascript
+      run: npm run build
+
+    - name: Publish to npm (beta)
+      if: contains(github.ref, '-beta') || contains(github.ref, '-rc')
+      working-directory: ./javascript
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npm publish --tag beta
+
+    - name: Publish to npm (latest)
+      if: "!contains(github.ref, '-beta') && !contains(github.ref, '-rc') && !contains(github.ref, '-alpha')"
+      working-directory: ./javascript
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      run: npm publish
+
+    - name: Create GitHub Release
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const version = '${{ steps.version.outputs.version }}';
+
+          await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: `javascript-v${version}`,
+            name: `JavaScript SDK v${version}`,
+            body: `Release of JavaScript/TypeScript SDK version ${version}\n\nInstall: \`npm install @keyvalue/client@${version}\`\n\nSee [CHANGELOG.md](./javascript/CHANGELOG.md) for details.`,
+            draft: false,
+            prerelease: version.includes('rc') || version.includes('beta') || version.includes('alpha')
+          });
+
+  release-go:
+    name: Release Go Module
+    if: startsWith(github.ref, 'refs/tags/go-v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/go-v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Releasing Go version: $VERSION"
+
+    - name: Run tests
+      working-directory: ./go
+      run: go test ./...
+
+    - name: Create GitHub Release
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const version = '${{ steps.version.outputs.version }}';
+
+          await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: `go-v${version}`,
+            name: `Go SDK v${version}`,
+            body: `Release of Go SDK version ${version}\n\nInstall: \`go get github.com/mikro-design/key-value.sdk/go@v${version}\`\n\nSee [CHANGELOG.md](./go/CHANGELOG.md) for details.`,
+            draft: false,
+            prerelease: version.includes('rc') || version.includes('beta') || version.includes('alpha')
+          });
+
+  release-rust:
+    name: Release Rust to crates.io
+    if: startsWith(github.ref, 'refs/tags/rust-v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/rust-v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Releasing Rust version: $VERSION"
+
+    - name: Verify version matches Cargo.toml
+      working-directory: ./rust
+      run: |
+        CARGO_VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+        TAG_VERSION=${{ steps.version.outputs.version }}
+        if [ "$CARGO_VERSION" != "$TAG_VERSION" ]; then
+          echo "❌ Version mismatch: Cargo.toml=$CARGO_VERSION, tag=$TAG_VERSION"
+          exit 1
+        fi
+        echo "✓ Version matches: $CARGO_VERSION"
+
+    - name: Run tests
+      working-directory: ./rust
+      run: cargo test
+
+    - name: Publish to crates.io
+      working-directory: ./rust
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_TOKEN }}
+      run: cargo publish
+
+    - name: Create GitHub Release
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const version = '${{ steps.version.outputs.version }}';
+
+          await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: `rust-v${version}`,
+            name: `Rust SDK v${version}`,
+            body: `Release of Rust SDK version ${version}\n\nInstall: \`cargo add keyvalue-client@${version}\`\n\nSee [CHANGELOG.md](./rust/CHANGELOG.md) for details.`,
+            draft: false,
+            prerelease: version.includes('rc') || version.includes('beta') || version.includes('alpha')
+          });
+
+  release-c:
+    name: Release C SDK
+    if: startsWith(github.ref, 'refs/tags/c-v')
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Extract version from tag
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/c-v}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Releasing C version: $VERSION"
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libcurl4-openssl-dev libjson-c-dev build-essential
+
+    - name: Build C SDK
+      working-directory: ./c
+      run: make clean && make
+
+    - name: Create tarball
+      working-directory: ./c
+      run: |
+        VERSION=${{ steps.version.outputs.version }}
+        tar -czf keyvalue-c-${VERSION}.tar.gz src/ include/ examples/ Makefile README.md
+
+    - name: Create GitHub Release with tarball
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const version = '${{ steps.version.outputs.version }}';
+
+          const release = await github.rest.repos.createRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag_name: `c-v${version}`,
+            name: `C SDK v${version}`,
+            body: `Release of C SDK version ${version}\n\nBuild from source - see [C README](./c/README.md) for instructions.\n\nSee [CHANGELOG.md](./c/CHANGELOG.md) for details.`,
+            draft: false,
+            prerelease: version.includes('rc') || version.includes('beta') || version.includes('alpha')
+          });
+
+          // Upload tarball as release asset
+          const tarballPath = `./c/keyvalue-c-${version}.tar.gz`;
+          if (fs.existsSync(tarballPath)) {
+            const content = fs.readFileSync(tarballPath);
+            await github.rest.repos.uploadReleaseAsset({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.data.id,
+              name: `keyvalue-c-${version}.tar.gz`,
+              data: content
+            });
+          }
+
+  release-summary:
+    name: Release Summary
+    runs-on: ubuntu-latest
+    needs: [release-python, release-javascript, release-go, release-rust, release-c]
+    if: always()
+
+    steps:
+    - name: Summary
+      run: |
+        echo "📦 Release Summary"
+        echo "=================="
+        echo "Python:     ${{ needs.release-python.result }}"
+        echo "JavaScript: ${{ needs.release-javascript.result }}"
+        echo "Go:         ${{ needs.release-go.result }}"
+        echo "Rust:       ${{ needs.release-rust.result }}"
+        echo "C:          ${{ needs.release-c.result }}"
+        echo ""
+        echo "✅ Releases published successfully!"

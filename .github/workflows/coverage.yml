@@ -1,0 +1,146 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  coverage-python:
+    name: Python Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      working-directory: ./python
+      run: |
+        pip install -e .
+        pip install pytest pytest-cov
+
+    - name: Run tests with coverage
+      working-directory: ./python
+      run: |
+        pytest tests/ --cov=keyvalue --cov-report=xml --cov-report=term
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./python/coverage.xml
+        flags: python
+        name: python-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+
+  coverage-javascript:
+    name: JavaScript Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install dependencies
+      working-directory: ./javascript
+      run: npm ci
+
+    - name: Run tests with coverage
+      working-directory: ./javascript
+      run: npm test -- --coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./javascript/coverage/coverage-final.json
+        flags: javascript
+        name: javascript-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+
+  coverage-go:
+    name: Go Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+
+    - name: Run tests with coverage
+      working-directory: ./go
+      run: |
+        go test -v -coverprofile=coverage.out -covermode=atomic ./...
+        go tool cover -func=coverage.out
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./go/coverage.out
+        flags: go
+        name: go-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+
+  coverage-rust:
+    name: Rust Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: llvm-tools-preview
+
+    - name: Install cargo-llvm-cov
+      run: cargo install cargo-llvm-cov
+
+    - name: Run tests with coverage
+      working-directory: ./rust
+      run: |
+        cargo llvm-cov --all-features --lcov --output-path lcov.info
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./rust/lcov.info
+        flags: rust
+        name: rust-coverage
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+
+  coverage-summary:
+    name: Coverage Summary
+    runs-on: ubuntu-latest
+    needs: [coverage-python, coverage-javascript, coverage-go, coverage-rust]
+    if: always()
+
+    steps:
+    - name: Coverage results
+      run: |
+        echo "📊 Coverage Report Summary"
+        echo "=========================="
+        echo "Python:     ${{ needs.coverage-python.result }}"
+        echo "JavaScript: ${{ needs.coverage-javascript.result }}"
+        echo "Go:         ${{ needs.coverage-go.result }}"
+        echo "Rust:       ${{ needs.coverage-rust.result }}"
+        echo ""
+        echo "📈 View detailed coverage at: https://codecov.io/gh/${{ github.repository }}"
+        echo ""
+        echo "✅ Coverage tracking helps identify untested code"

@@ -10,10 +10,12 @@
 - ⚡ **Advanced Features**: Atomic PATCH operations, batch requests, schema validation, versioning
 
 [![CI](https://github.com/mikro-design/key-value.sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/mikro-design/key-value.sdk/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/mikro-design/key-value.sdk/branch/main/graph/badge.svg)](https://codecov.io/gh/mikro-design/key-value.sdk)
 [![Python](https://img.shields.io/pypi/v/keyvalue-client?label=Python)](./python)
 [![JavaScript](https://img.shields.io/npm/v/@keyvalue/client?label=JavaScript)](./javascript)
+[![Go](https://img.shields.io/badge/Go-1.20+-00ADD8?logo=go)](./go)
+[![Rust](https://img.shields.io/badge/Rust-stable-orange?logo=rust)](./rust)
 [![C](https://img.shields.io/badge/C-Ready-blue)](./c)
-[![curl](https://img.shields.io/badge/curl-Examples-green)](./curl)
 
 ## 📚 Available SDKs
 
