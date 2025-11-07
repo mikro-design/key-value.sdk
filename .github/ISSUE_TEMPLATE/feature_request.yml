@@ -1,0 +1,85 @@
+name: Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature]: "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please check the [Roadmap](https://github.com/mikro-design/key-value.sdk/blob/main/ROADMAP.md) first to see if it's already planned.
+
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: Which SDK?
+      description: Which SDK should this feature be added to?
+      options:
+        - All SDKs
+        - Python
+        - JavaScript/TypeScript
+        - Go
+        - Rust
+        - C
+        - New SDK (specify below)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: As a developer, I need to... because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this feature to work?
+      placeholder: I would like to be able to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example Usage
+      description: Show how you'd like to use this feature
+      render: python
+      placeholder: |
+        # Example code showing the feature
+        client.new_feature(...)
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered?
+      placeholder: I could also...
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical - Blocking my work
+        - High - Would significantly improve my workflow
+        - Medium - Nice to have
+        - Low - Minor improvement
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I have checked the Roadmap to ensure this isn't already planned
+          required: true
+        - label: I have searched existing issues to ensure this isn't a duplicate
+          required: true
+        - label: I am willing to contribute this feature
+          required: false

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/mikro-design/key-value.sdk/discussions
+    about: Ask questions, share ideas, and discuss with the community
+  - name: 📚 Documentation
+    url: https://key-value.co/docs
+    about: Check the documentation for guides and API reference
+  - name: 🔒 Security Vulnerability
+    url: https://github.com/mikro-design/key-value.sdk/blob/main/SECURITY.md
+    about: Report security vulnerabilities privately
+  - name: 💬 Discord Community
+    url: https://discord.gg/keyvalue
+    about: Chat with the community in real-time
