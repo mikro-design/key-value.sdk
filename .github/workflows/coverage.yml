@@ -31,7 +31,7 @@ jobs:
         pytest tests/ --cov=keyvalue --cov-report=xml --cov-report=term
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./python/coverage.xml
         flags: python
@@ -60,7 +60,7 @@ jobs:
       run: npm test -- --coverage
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./javascript/coverage/coverage-final.json
         flags: javascript
@@ -87,7 +87,7 @@ jobs:
         go tool cover -func=coverage.out
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./go/coverage.out
         flags: go
@@ -117,7 +117,7 @@ jobs:
         cargo llvm-cov --all-features --lcov --output-path lcov.info
 
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
+      uses: codecov/codecov-action@v5
       with:
         file: ./rust/lcov.info
         flags: rust
