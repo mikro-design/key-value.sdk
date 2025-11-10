@@ -70,7 +70,7 @@ jobs:
         twine upload dist/*
 
     - name: Create GitHub Release
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const fs = require('fs');
@@ -145,7 +145,7 @@ jobs:
       run: npm publish
 
     - name: Create GitHub Release
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const version = '${{ steps.version.outputs.version }}';
@@ -185,7 +185,7 @@ jobs:
       run: go test ./...
 
     - name: Create GitHub Release
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const version = '${{ steps.version.outputs.version }}';
@@ -242,7 +242,7 @@ jobs:
       run: cargo publish
 
     - name: Create GitHub Release
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const version = '${{ steps.version.outputs.version }}';
@@ -288,7 +288,7 @@ jobs:
         tar -czf keyvalue-c-${VERSION}.tar.gz src/ include/ examples/ Makefile README.md
 
     - name: Create GitHub Release with tarball
-      uses: actions/github-script@v7
+      uses: actions/github-script@v8
       with:
         script: |
           const fs = require('fs');
