@@ -48,7 +48,7 @@
   "homepage": "https://github.com/mikro-design/key-value.js#readme",
   "devDependencies": {
     "@types/node": "^20.19.24",
-    "tsup": "^8.0.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.3.3",
     "vitest": "^1.2.0"
   },
